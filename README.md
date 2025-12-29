@@ -69,6 +69,3 @@ docs/        # Additional documentation
 ## Author
 **Doddaboina Divya**  
 M.Tech Biotechnology
-
-
-## Repository Structure
