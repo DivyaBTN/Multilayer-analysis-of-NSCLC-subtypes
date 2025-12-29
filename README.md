@@ -44,12 +44,12 @@ This repository presents a systems-level multilayer analysis of non-small cell l
 - Structural bioinformatics and molecular docking tools
 
 - ## Repository Structure
-data/        # Input datasets and processed data
+'''data/        # Input datasets and processed data
 scripts/     # R scripts and analysis code
 results/     # Tables and intermediate outputs
 figures/     # Plots including oncoprints, Circos plots, and survival curves
 docking/     # Motif analysis and molecular docking files
-docs/        # Additional documentation
+docs/        # Additional documentation'''
 
 ## Key Outcomes
 - Identification of subtype-specific mutation patterns in LUAD and LUSC
