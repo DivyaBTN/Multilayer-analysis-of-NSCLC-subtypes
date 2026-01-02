@@ -1,0 +1,51 @@
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install(c("clusterProfiler", "org.Hs.eg.db", "enrichplot", "ReactomePA"))
+
+# Load libraries
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(ReactomePA)
+library(enrichplot)
+# Use LUAD-specific gene symbols
+luad_genes <- luad_specific_genes$Hugo_Symbol
+
+# Convert to Entrez IDs
+luad_entrez <- bitr(luad_genes, fromType = "SYMBOL",
+                    toType = "ENTREZID", OrgDb = org.Hs.eg.db)
+luad_reactome <- enrichPathway(gene = luad_entrez$ENTREZID,
+                               organism = "human", readable = TRUE)
+luad_kegg <- enrichKEGG(gene = luad_entrez$ENTREZID,
+                        organism = "hsa", keyType = "kegg")
+# Dotplot of Reactome
+dotplot(luad_reactome, showCategory = 15) + ggtitle("LUAD Reactome Pathway Enrichment")
+
+# Or barplot
+barplot(luad_reactome, showCategory = 15)
+# Use LUSC-specific gene symbols
+lusc_genes <- lusc_specific_genes$Hugo_Symbol
+lusc_entrez <- bitr(lusc_genes,
+                    fromType = "SYMBOL",
+                    toType = "ENTREZID",
+                    OrgDb = org.Hs.eg.db)
+lusc_reactome <- enrichPathway(gene = lusc_entrez$ENTREZID,
+                               organism = "human", readable = TRUE)
+library(enrichplot)
+
+dotplot(lusc_reactome, showCategory = 15) + 
+  ggtitle("LUSC Reactome Pathway Enrichment")
+head(lusc_reactome@result, 10)
+gene_list <- list(
+  LUAD = luad_entrez$ENTREZID,
+  LUSC = lusc_entrez$ENTREZID
+)
+compare_result <- compareCluster(
+  geneCluster = gene_list,
+  fun = "enrichPathway",
+  organism = "human",
+  readable = TRUE
+)
+dotplot(compare_result, showCategory = 15) +
+  ggtitle("Pathway Enrichment Comparison: LUAD vs LUSC")
+head(compare_result@compareClusterResult, 10)

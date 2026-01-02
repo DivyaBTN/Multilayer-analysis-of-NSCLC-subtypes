@@ -1,0 +1,43 @@
+negative feedback loop: EGFR-AKT-FOXO3a-EPS8
+
+# Variables:
+# E = EGFR activity
+# A = AKT activity
+# F = FOXO3a activity (nuclear)
+# P = EPS8 level
+
+# ODEs
+dE/dt = k1 + k2*P/(K3 + P) - d1*E
+dA/dt = k4*E/(K5 + E) - d2*A
+dF/dt = k6/(1 + A^n) - d3*F
+dP/dt = k7/(1 + F^m) - d4*P
+
+# Parameters
+param k1 = 0.5      # basal EGFR input
+param k2 = 2        # EPS8-stimulated EGFR
+param K3 = 1
+param d1 = 1
+
+param k4 = 3        # EGFR to AKT activation
+param K5 = 1
+param d2 = 1
+
+param k6 = 2        # basal FOXO3a synthesis
+param n = 3         # Hill coefficient (AKT repression of FOXO3a)
+param d3 = 1
+
+param k7 = 4        # EPS8 synthesis rate (repressed by FOXO3a)
+param m = 2         # Hill coefficient (FOXO3a repression)
+param d4 = 1
+
+# Initial conditions
+init E = 0.5, A = 0.2, F = 1, P = 0.5
+
+# Time settings
+@ total=100, dt=0.1, xlo=0, xhi=100, ylo=0, yhi=5
+
+# Plot
+@ nplot=4
+@ yp1=E, yp2=A, yp3=F, yp4=P
+
+done

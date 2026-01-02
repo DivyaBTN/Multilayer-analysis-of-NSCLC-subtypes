@@ -1,0 +1,60 @@
+library(TCGAbiolinks)
+
+query <- GDCquery(
+  project = "TCGA-LUSC",
+  data.category = "Simple Nucleotide Variation",
+  data.type = "Masked Somatic Mutation",
+  workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
+)
+GDCdownload(query)
+maf_data <- GDCprepare(query)
+library(dplyr)
+
+circos_input <- maf_data %>%
+  select(Chromosome, Start_Position, End_Position = End_Position, Variant_Classification) %>%
+  mutate(Chromosome = paste0("chr", Chromosome))
+install.packages("circlize")
+library(circlize)
+# Initialize genome plot
+circos.initialize(factors = circos_input$Chromosome,
+                  x = circos_input$Start_Position)
+
+# Add a track with points (mutations)
+circos.trackPlotRegion(
+  ylim = c(0, 1),
+  panel.fun = function(region, value, ...) {
+    circos.points(
+      x = circos_input$Start_Position,
+      y = runif(nrow(circos_input)), # random y-axis for visualization
+      pch = 16,
+      cex = 0.5,
+      col = "red"
+    )
+  }
+)
+
+# Clear session
+# Define colors for types
+mutation_colors <- c(
+  "Missense_Mutation" = "red",
+  "Nonsense_Mutation" = "blue",
+  "Splice_Site" = "green",
+  "Frame_Shift_Del" = "purple",
+  "Frame_Shift_Ins" = "orange"
+)
+
+circos.trackPlotRegion(
+  ylim = c(0, 1),
+  panel.fun = function(region, value, ...) {
+    for(i in 1:nrow(circos_input)) {
+      circos.points(
+        x = circos_input$Start_Position[i],
+        y = runif(1),
+        col = mutation_colors[circos_input$Variant_Classification[i]],
+        pch = 16,
+        cex = 0.4
+      )
+    }
+  }
+)
+circos.clear()
